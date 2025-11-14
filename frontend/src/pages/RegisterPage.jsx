@@ -1,9 +1,43 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useForm } from "../hooks/useForm";
 
 export const RegisterPage = () => {
   // TODO: Integrar lógica de registro aquí
   // TODO: Implementar useForm para el manejo del formulario
   // TODO: Implementar función handleSubmit
+
+  const navigate = useNavigate();
+  const { formState, handleChange, handleReset } = useForm({
+    username: "",
+    email: "",
+    password: "",
+    name: "",
+    lastname: "",
+  });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch("http://localhost:3000/api/register", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(formState),
+      });
+
+      if (response.ok) {
+        navigate("/login");
+      } else {
+        alert("Credenciales incorrectas");
+        handleReset();
+      }
+    } catch (e) {
+      console.error("Error: ", e.message);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">
@@ -19,7 +53,7 @@ export const RegisterPage = () => {
           </p>
         </div>
 
-        <form onSubmit={(event) => {}}>
+        <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
               htmlFor="username"
@@ -31,6 +65,7 @@ export const RegisterPage = () => {
               type="text"
               id="username"
               name="username"
+              onChange={handleChange}
               placeholder="Elige un nombre de usuario"
               className="w-full border border-gray-300 rounded p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
               required
@@ -48,6 +83,7 @@ export const RegisterPage = () => {
               type="email"
               id="email"
               name="email"
+              onChange={handleChange}
               placeholder="tu@email.com"
               className="w-full border border-gray-300 rounded p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
               required
@@ -65,6 +101,7 @@ export const RegisterPage = () => {
               type="password"
               id="password"
               name="password"
+              onChange={handleChange}
               placeholder="Crea una contraseña segura"
               className="w-full border border-gray-300 rounded p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
               required
@@ -82,6 +119,7 @@ export const RegisterPage = () => {
               type="text"
               id="name"
               name="name"
+              onChange={handleChange}
               placeholder="Tu nombre"
               className="w-full border border-gray-300 rounded p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
               required
@@ -99,6 +137,7 @@ export const RegisterPage = () => {
               type="text"
               id="lastname"
               name="lastname"
+              onChange={handleChange}
               placeholder="Tu apellido"
               className="w-full border border-gray-300 rounded p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
               required
