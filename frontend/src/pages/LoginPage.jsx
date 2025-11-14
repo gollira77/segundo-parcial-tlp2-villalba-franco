@@ -1,9 +1,40 @@
 import { Link } from "react-router";
+import { useForm } from "../hooks/useForm";
+import { useNavigate } from "react-router";
 
 export const LoginPage = () => {
   // TODO: Integrar lógica de autenticación aquí
   // TODO: Implementar useForm para el manejo del formulario
   // TODO: Implementar función handleSubmit
+
+  const navigate = useNavigate();
+  const { formState, handleChange, handleReset } = useForm({
+    username: "",
+    password: "",
+  });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await fetch("http://localhost:3000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(formState),
+      });
+
+      if (res.ok) {
+        navigate("/home");
+      } else {
+        alert("Credenciales incorrectas");
+        handleReset();
+      }
+    } catch (e) {
+      console.error("Error: ", e.message);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">
@@ -20,7 +51,7 @@ export const LoginPage = () => {
           </p>
         </div>
 
-        <form onSubmit={(event) => {}}>
+        <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
               htmlFor="username"
@@ -32,6 +63,7 @@ export const LoginPage = () => {
               type="text"
               id="username"
               name="username"
+              onChange={handleChange}
               placeholder="Ingresa tu usuario"
               className="w-full border border-gray-300 rounded p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
@@ -49,6 +81,7 @@ export const LoginPage = () => {
               type="password"
               id="password"
               name="password"
+              onChange={handleChange}
               placeholder="Ingresa tu contraseña"
               className="w-full border border-gray-300 rounded p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
