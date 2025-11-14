@@ -1,10 +1,56 @@
+import { useEffect } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router";
+
 export const Navbar = () => {
   // TODO: Obtener datos del usuario desde /api/profile
   // TODO: Implementar función handleLogout con POST a /api/logout usando credentials: 'include'
   // TODO: Después del logout exitoso, redireccionar a /login
   // TODO: Manejar errores apropiadamente
 
-  const userName = "Usuario"; // TODO: Reemplazar con el nombre real del usuario obtenido de /api/profile
+  const navigate = useNavigate();
+
+  const [profile, setProfile] = useState({
+    name: "Franco",
+    lastname: "l_Love_the_Backend_forever❤️",
+  });
+
+  const getProfile = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/profile", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setProfile(data);
+      }
+    } catch (error) {
+      console.log("El error que se obtuvo es: ", error.message);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        navigate("/login");
+      }
+    } catch (error) {
+      console.log("error al querer cerrar sesión", error.message);
+    }
+  };
+
+  useEffect(() => {
+    getProfile();
+  }, []);
+
+  const userName = user.data; // TODO: Reemplazar con el nombre real del usuario obtenido de /api/profile
 
   return (
     <nav className="bg-gray-900 text-white h-16 left-0 right-0 shadow-lg sticky top-0 z-50">
@@ -18,9 +64,7 @@ export const Navbar = () => {
           </span>
 
           <button
-            onClick={() => {
-              // TODO: Implementar handleLogout aquí
-            }}
+            onClick={handleLogout}
             className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded transition-colors font-medium"
           >
             Cerrar Sesión
